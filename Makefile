@@ -1,4 +1,6 @@
-.PHONY: up down
+.PHONY: up down push
+
+MSG ?= Update project
 
 ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 PY := $(ROOT)/backend/.venv/bin/python
@@ -49,3 +51,14 @@ down:
 		$(PGBIN)/pg_ctl -D $(PGDATA) -m fast stop >/dev/null; \
 	fi
 	@echo "Stopped web app, API, and local database."
+
+push:
+	@set -eu; \
+	cd $(ROOT); \
+	git add -A; \
+	if git diff --cached --quiet; then \
+		echo "Nothing new to commit."; \
+	else \
+		git commit -m "$(MSG)"; \
+	fi; \
+	git push
